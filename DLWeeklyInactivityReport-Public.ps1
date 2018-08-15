@@ -19,7 +19,7 @@ $Username = "admin.account@domain.com"
 $PasswordPath = "\\path\to\secure\password.txt"
 
 #Set the constants
-$Date = get-date -format MMddyyyy
+$Date = get-date
 $From = "admin.account@domain.com"
 $To = @("email.one@domain.com","email.two@domain.com")
 $Subject = "Weekly Distribution List Inactivity Report"
@@ -28,7 +28,7 @@ $SMTPServer = "smtp.office365.com"
 $SMTPPort = "587"
 
 #Set export file name
-$DLActivityReport = "\\server\share\DL Activity Reports\Inactive"+$Date+".txt"
+$DLActivityReport = "\\server\share\DL Activity Reports\Inactive"+$Date.ToString("MMddyyyy")+".txt"
 
 #Read the password from the file and convert to SecureString
 $SecurePassword = Get-Content $PasswordPath | ConvertTo-SecureString
@@ -45,7 +45,7 @@ import-PSSession $ExOSession -AllowClobber
 $DistroLists = Get-DistributionGroup -ResultSize Unlimited
 
 #Run message trace on each Distribution List to see if it recieved mail in the past x days.
-$DistroListsInUse = $DistroLists | select -ExpandProperty primarysmtpaddress  | Foreach-Object { Get-MessageTrace -RecipientAddress $_ -Status expanded -startdate (Get-Date).AddDays(-8) -EndDate (Get-Date) -pagesize 1| select -first 1} 
+$DistroListsInUse = $DistroLists | select -ExpandProperty primarysmtpaddress  | Foreach-Object { Get-MessageTrace -RecipientAddress $_ -Status expanded -startdate $Date.AddDays(-8) -EndDate $Date -pagesize 1| select -first 1} 
 
 #Check to see if the message trace shows recieved mail vs. not returning anything and output active status respectivly. 
 $Results =  Compare-Object -ReferenceObject $DistroListsinUse.RecipientAddress -DifferenceObject $DistroLists.primarySMTPaddress -PassThru

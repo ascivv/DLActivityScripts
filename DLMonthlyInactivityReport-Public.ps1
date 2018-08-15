@@ -20,7 +20,7 @@ $Username = "admin.account@domain.com"
 $PasswordPath = "\\path\to\secure\password.txt"
 
 #Set the constants
-$Date = get-date -format MMddyyyy
+$Date = get-date
 $From = "admin.account@domain.com"
 $To = "helpdesk.email@domain.com"
 $Subject = "Monthly Distribution List Inactivity Report"
@@ -40,10 +40,10 @@ import-PSSession $ExOSession -AllowClobber
 
 #This will input past four weeks of reports and find lists that are on each report. 
 #Get report run date for previous weekly reports
-$Week1Date = (get-date).AddDays(-21).ToString("MMddyyyy")
-$Week2Date = (get-date).AddDays(-14).ToString("MMddyyyy")
-$Week3Date = (get-date).AddDays(-7).ToString("MMddyyyy")
-$Week4Date = (get-date).ToString("MMddyyyy")
+$Week1Date = $Date.AddDays(-21).ToString("MMddyyyy")
+$Week2Date = $Date.AddDays(-14).ToString("MMddyyyy")
+$Week3Date = $Date.AddDays(-7).ToString("MMddyyyy")
+$Week4Date = $Date.ToString("MMddyyyy")
 
 #Set report file path
 $Week1Path = "\\server\share\DL Activity Reports\Inactive\Inactive"+$Week1Date+".txt"
@@ -66,7 +66,7 @@ $Week34Results =  Compare-Object -ReferenceObject $Week23Results.InputObject -Di
 $MonthlyInactive = $Week34Results.InputObject
 
 #Set export file name
-$DLMonthlyActivityReport = "\\server\share\DL Activity Reports\Inactive\MonthlyInactive"+$date+".txt"
+$DLMonthlyActivityReport = "\\server\share\DL Activity Reports\Inactive\MonthlyInactive"+$Date.ToString("MMddyyyy")+".txt"
 
 #Export the findings to a file
 $MonthlyInactive | Out-File $DLMonthlyActivityReport
